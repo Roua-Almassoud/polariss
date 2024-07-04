@@ -1184,6 +1184,14 @@ body .secondary-nav a i {
 .react-datepicker__navigation--next {
   top: 7px !important;
 }
+
+.react-datepicker__header__dropdown.react-datepicker__header__dropdown--scroll {
+  margin: 10px;
+}
+.react-datepicker__month-read-view--down-arrow,
+.react-datepicker__year-read-view--down-arrow{
+  border-color: #4611a7 !important;
+}
 .search-responsive {
   display: none;
 }
@@ -1196,8 +1204,8 @@ body .secondary-nav a i {
 
 @keyframes slide {
   0% {
-   left: 0%;
-  opacity: 1;
+    left: 0%;
+    opacity: 1;
   }
   99% {
     left: 99%;
@@ -1213,7 +1221,7 @@ body .secondary-nav a i {
 @-webkit-keyframes slide {
   0% {
     left: 0%;
-  opacity: 1;
+    opacity: 1;
   }
   99% {
     left: 99%;

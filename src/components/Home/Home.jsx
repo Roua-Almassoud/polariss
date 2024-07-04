@@ -2,21 +2,32 @@ import { Dropdown } from 'bootstrap';
 import React, { Suspense, useEffect, useState } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import './Home.css';
-import { APIProvider, Map } from '@vis.gl/react-google-maps';
+import {
+  APIProvider,
+  //   Map,
+  //   Marker,
+  //   useMap,
+  //   useMapsLibrary,
+} from '@vis.gl/react-google-maps';
 import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Api from '../../api/Api';
+import CutomMap from './Map';
 
 const API_KEY = import.meta.env.API_KEY;
 function Home(props) {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
   const [show, setShow] = useState(false);
   const [users, setUsers] = useState([]);
   const [selectedUser, setSelectedUser] = useState({});
   const [selectedBike, setSelectedBike] = useState({});
   const [selectedDevice, setSelecteDevice] = useState({});
+  const [device, setDevice] = useState({});
+  const [movements, setMovements] = useState([]);
+  const [startDate, setStartDate] = useState(new Date());
+  const [endDate, setEndDate] = useState(new Date());
 
   const lineApi = async () => {
     setLoading(true);
@@ -34,7 +45,41 @@ function Home(props) {
       const userId = response.data.data.accessToken;
       localStorage.setItem('userId', userId);
       navigate('/');
-      getHomePage()
+      getHomePage();
+    }
+  };
+
+  const formatDate = (date) => {
+    let updatedDate = new Date(date),
+      month = '' + (updatedDate.getMonth() + 1),
+      day = '' + updatedDate.getDate(),
+      year = updatedDate.getFullYear();
+
+    if (month.length < 2) month = '0' + month;
+    if (day.length < 2) day = '0' + day;
+
+    return [year, month, day].join('-');
+  };
+
+  const getDeviceInfo = async (device = selectedDevice) => {
+    const deviceInfo = await Api.call(
+      {},
+      `devices/latestInfo?imsi=${device.imsi}`,
+      'get',
+      localStorage.getItem('userId')
+    );
+    if (deviceInfo.data.code === 200) {
+      const movementResponse = await Api.call(
+        {},
+        `devices/movements?imsi=${device.imsi}&fromDate=${formatDate(
+          startDate
+        )}&toDate=${formatDate(endDate)}`,
+        'get',
+        localStorage.getItem('userId')
+      );
+      setDevice(deviceInfo.data.data);
+      setMovements(movementResponse.data.data);
+      setLoading(false);
     }
   };
 
@@ -54,7 +99,7 @@ function Home(props) {
       setSelectedUser(user);
       setSelectedBike(bike);
       setSelecteDevice(device);
-      setLoading(false);
+      getDeviceInfo(device);
     }
   };
 
@@ -64,36 +109,46 @@ function Home(props) {
     } else {
       if (!localStorage.getItem('userId')) {
         navigate('/login');
+      } else {
+        getHomePage();
       }
     }
   }, []);
 
   const handleSelect = (field, event) => {
     const value = event.target.value;
+    let userToUpdate, bikeToUpdate, devicetoUpdate;
     switch (field) {
       case 'user':
-        const user = users.find((a) => a.id === value);
-        const bike = user.bikes[0];
-        const device = bike.devices[0];
-        setSelectedUser(user);
-        setSelectedBike(bike);
-        setSelecteDevice(device);
+        userToUpdate = users.find((a) => a.id === value);
+        bikeToUpdate = userToUpdate.bikes[0];
+        devicetoUpdate = bikeToUpdate.devices[0];
+        setSelectedUser(userToUpdate);
+        setSelectedBike(bikeToUpdate);
+        setSelecteDevice(devicetoUpdate);
         break;
       case 'bike':
-        const bikeToSelect = selectedUser.bikes.find((a) => a.id === value);
-        const deviceToSelect = bikeToSelect.devices[0];
+        bikeToUpdate = selectedUser.bikes.find((a) => a.id === value);
+        devicetoUpdate = bikeToUpdate.devices[0];
         setSelectedBike(bikeToSelect);
-        setSelecteDevice(deviceToSelect);
+        setSelecteDevice(devicetoUpdate);
         break;
       case 'device':
-        const deviceSelectd = selectedBike.devices.find((a) => a.id === value);
-        setSelecteDevice(deviceSelectd);
+        devicetoUpdate = selectedBike.devices.find((a) => a.id === value);
+        setSelecteDevice(devicetoUpdate);
         break;
     }
+    setLoading(true);
+    getDeviceInfo(devicetoUpdate);
   };
 
   const isEmpty = (value) => {
     return Object.keys(value).length === 0 && value.constructor === Object;
+  };
+
+  const handleClick = () => {
+    setLoading(true);
+    getDeviceInfo();
   };
 
   const renderSearchBar = () => {
@@ -107,11 +162,23 @@ function Home(props) {
               </div>
               <div class="row">
                 <div class="col-md-6 col-sm-6">
-                  <DatePicker />
+                  <DatePicker
+                    dateFormat={'yyyy-MM-dd'}
+                    selected={startDate}
+                    onChange={(date) => setStartDate(date)}
+                    showMonthDropdown
+                    showYearDropdown
+                  />
                 </div>
                 <div class="col-md-6 col-sm-6">
                   <div class="form-group">
-                    <DatePicker />
+                    <DatePicker
+                      dateFormat={'yyyy-MM-dd'}
+                      selected={endDate}
+                      onChange={(date) => setEndDate(date)}
+                      showMonthDropdown
+                      showYearDropdown
+                    />
                   </div>
                 </div>
               </div>
@@ -123,6 +190,7 @@ function Home(props) {
                   data-ajax-data-file="assets/external/data_2.php"
                   data-ajax-auto-zoom="1"
                   class="btn btn-primary pull-right"
+                  onClick={() => handleClick()}
                 >
                   更新
                 </button>
@@ -143,13 +211,16 @@ function Home(props) {
                       name="city"
                       onChange={(event) => handleSelect('user', event)}
                     >
-                      <option value="" style={{ color: 'red' }}>
-                        Users
-                      </option>
-
                       {!isEmpty(selectedUser) &&
                         users.map((user) => {
-                          return <option value={user.id}>{user.name1}</option>;
+                          return (
+                            <option
+                              value={user.id}
+                              selected={user.id === selectedUser.id}
+                            >
+                              {user.nickname}
+                            </option>
+                          );
                         })}
                     </select>
                   </div>
@@ -165,7 +236,14 @@ function Home(props) {
                     >
                       {!isEmpty(selectedUser) &&
                         selectedUser?.bikes.map((bike) => {
-                          return <option value={bike.id}>{bike.name}</option>;
+                          return (
+                            <option
+                              value={bike.id}
+                              selected={bike.id === selectedBike.id}
+                            >
+                              {bike.name}
+                            </option>
+                          );
                         })}
                     </select>
                   </div>
@@ -182,7 +260,12 @@ function Home(props) {
                       {!isEmpty(selectedBike) &&
                         selectedBike?.devices.map((device) => {
                           return (
-                            <option value={device.id}>{device.name}</option>
+                            <option
+                              value={device.id}
+                              selected={device.id === selectedDevice.id}
+                            >
+                              {device.name}
+                            </option>
                           );
                         })}
                     </select>
@@ -219,7 +302,7 @@ function Home(props) {
               <div class="row">
                 <div class="col-md-6 col-sm-6">バッテリー：</div>
                 <div class="col-md-6 col-sm-6">
-                  <button
+                  {/* <button
                     style={{ width: '100%' }}
                     data-ajax-response="map"
                     data-ajax-data-file="assets/external/data_2.php"
@@ -227,7 +310,8 @@ function Home(props) {
                     class="btn btn-primary"
                   >
                     充電中
-                  </button>
+                  </button> */}
+                  <span>{device.lastLocation?.bat}</span>
                 </div>
               </div>
               <hr />
@@ -277,19 +361,13 @@ function Home(props) {
                 />
               </svg>
             </div>
-            
+
             <div className={`show-side-bar ${show ? 'show' : 'hide'}`}>
               {renderSearchBar()}
             </div>
 
             <APIProvider apiKey={API_KEY}>
-              <Map
-                className={'col col-12 col-md-9 map-col'}
-                defaultCenter={{ lat: 22.54992, lng: 0 }}
-                defaultZoom={3}
-                gestureHandling={'greedy'}
-                disableDefaultUI={false}
-              />
+              <CutomMap device={device} movements={movements} />
             </APIProvider>
             {renderSearchBar()}
           </div>
