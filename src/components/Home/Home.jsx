@@ -140,6 +140,7 @@ function Home(props) {
     }
     setLoading(true);
     getDeviceInfo(devicetoUpdate);
+    setShow(false);
   };
 
   const isEmpty = (value) => {
@@ -149,6 +150,7 @@ function Home(props) {
   const handleClick = () => {
     setLoading(true);
     getDeviceInfo();
+    setShow(false);
   };
 
   const renderSearchBar = () => {
@@ -284,18 +286,27 @@ function Home(props) {
                 <h3>最終通信情報</h3>
               </div>
               <hr />
+
               <div class="row">
                 <div class="col-md-6 col-sm-6">端末状態：</div>
                 <div class="col-md-6 col-sm-6">
-                  <button
+                  <p
                     style={{ width: '100%' }}
-                    data-ajax-response="map"
-                    data-ajax-data-file="assets/external/data_2.php"
-                    data-ajax-auto-zoom="1"
-                    class="btn btn-primary"
+                    class={`btn ${
+                      !device?.monitoringActive
+                        ? 'btn-outline-danger'
+                        : 'btn-outline-primary'
+                    }`}
                   >
                     正常
-                  </button>
+                  </p>
+                </div>
+              </div>
+              <hr />
+              <div class="row">
+                <div class="col-md-6 col-sm-6">通信日時</div>
+                <div class="col-md-6 col-sm-6">
+                  {device?.lastLocation?.dt?.replace('T', ' ')}
                 </div>
               </div>
               <hr />
@@ -311,7 +322,7 @@ function Home(props) {
                   >
                     充電中
                   </button> */}
-                  <span>{device.lastLocation?.bat}</span>
+                  <span>{device?.lastLocation?.bat}</span>
                 </div>
               </div>
               <hr />

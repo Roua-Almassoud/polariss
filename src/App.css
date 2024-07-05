@@ -5,6 +5,9 @@ body {
   background: #f5f7fa !important;
   overflow-x: hidden;
 }
+#root {
+  overflow-x: hidden;
+}
 .btn,
 button {
   font-size: 0.8rem !important;

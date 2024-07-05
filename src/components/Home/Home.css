@@ -1135,6 +1135,20 @@ body .secondary-nav a i {
   color: #fff;
   border-color: #4611a7;
 }
+.btn-outline-primary,
+.btn-outline-primary:hover {
+  border-color: #4611a7 !important;
+  color: #4611a7 !important;
+  background-color: transparent !important;
+  cursor: default;
+}
+.btn-outline-danger,
+.btn-outline-danger:hover {
+  border-color: #dc3545 !important;
+  color: #dc3545 !important;
+  background-color: transparent !important;
+  cursor: default;
+}
 .btn.btn-primary:active,
 .btn.btn-primary:focus,
 .btn.btn-primary:hover,
@@ -1189,7 +1203,7 @@ body .secondary-nav a i {
   margin: 10px;
 }
 .react-datepicker__month-read-view--down-arrow,
-.react-datepicker__year-read-view--down-arrow{
+.react-datepicker__year-read-view--down-arrow {
   border-color: #4611a7 !important;
 }
 .search-responsive {
@@ -1298,9 +1312,10 @@ body .secondary-nav a i {
     width: 60%;
   }
   .show-side-bar.show .results-wrapper {
-    display: inline;
+    display: block;
     width: 100%;
     z-index: 1;
+    transition: 0.35s ease-in-out;
   }
   .show-side-bar.hide,
   .hero-section .results-wrapper {
