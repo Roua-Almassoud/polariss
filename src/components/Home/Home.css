@@ -5,6 +5,7 @@ body .secondary-nav {
   padding-right: 15px;
   position: relative;
   border-right: 1px solid rgba(0, 0, 0, 0.1);
+  cursor: pointer;
 }
 body .primary-nav.has-mega-menu,
 body .secondary-nav.has-mega-menu {
@@ -196,7 +197,10 @@ body .secondary-nav ul.navigation li.has-child > a:before {
   padding-right: 7px;
 }
 body .primary-nav ul.navigation li.has-child > a:after,
-body .secondary-nav ul.navigation li.has-child > a:after {
+body .secondary-nav ul.navigation li.has-child > a:after
+/* ,.form.inputs-underline select, .form.inputs-underline select.form-control:after  */
+,.form-control.selectpicker::after,.form-control.selectpicker::before
+{
   text-shadow: none;
   -webkit-font-smoothing: antialiased;
   font-family: 'fontawesome';

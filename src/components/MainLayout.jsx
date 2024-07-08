@@ -22,7 +22,7 @@ function MainLayout(props) {
               <div class="primary-nav has-mega-menu">
                 <ul class="navigation">
                   <li class="active has-child">
-                    <a href="#nav-homepages">
+                    <a>
                       {localStorage.getItem('user-name') || 'Name'}
                     </a>
                     <div class="wrapper">

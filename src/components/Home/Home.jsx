@@ -209,7 +209,7 @@ function Home(props) {
                 <div class="col-md-12 col-sm-12">
                   <div class="form-group">
                     <select
-                      class="form-control selectpicker"
+                      class="form-control form-select selectpicker"
                       name="city"
                       onChange={(event) => handleSelect('user', event)}
                     >
@@ -232,7 +232,7 @@ function Home(props) {
                 <div class="col-md-12 col-sm-12">
                   <div class="form-group">
                     <select
-                      class="form-control selectpicker"
+                      class="form-control form-select selectpicker"
                       name="category"
                       onChange={(event) => handleSelect('bike', event)}
                     >
@@ -255,7 +255,7 @@ function Home(props) {
                 <div class="col-md-12 col-sm-12">
                   <div class="form-group">
                     <select
-                      class="form-control selectpicker"
+                      class="form-select"
                       name="device"
                       onChange={(event) => handleSelect('device', event)}
                     >
