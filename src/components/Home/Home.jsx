@@ -13,6 +13,8 @@ import DatePicker from 'react-datepicker';
 import 'react-datepicker/dist/react-datepicker.css';
 import Api from '../../api/Api';
 import CutomMap from './Map';
+import MonitoringModal from './MonitoringModal';
+import Utils from '../utils/utils';
 
 const API_KEY = import.meta.env.API_KEY;
 function Home(props) {
@@ -28,6 +30,9 @@ function Home(props) {
   const [movements, setMovements] = useState([]);
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
+  const [showMonitoring, setShowMonitoring] = useState(false);
+  const [range, setRange] = useState(0);
+  const [updatedKey, setUpdatedKey] = useState(Utils.unique());
 
   const lineApi = async () => {
     setLoading(true);
@@ -78,6 +83,11 @@ function Home(props) {
         localStorage.getItem('userId')
       );
       setDevice(deviceInfo.data.data);
+      setRange(
+        deviceInfo.data.data?.monitoringActive
+          ? deviceInfo.data.data?.monitoringSettings?.rannge
+          : 0
+      );
       setMovements(movementResponse.data.data);
       setLoading(false);
     }
@@ -153,6 +163,17 @@ function Home(props) {
     setShow(false);
   };
 
+  const showModal = (event) => {
+    event.preventDefault();
+    setShowMonitoring(true);
+  };
+
+  const updateRange = (value) => {
+    setRange(value);
+    setShowMonitoring(false);
+    setUpdatedKey(Utils.unique());
+  };
+
   const renderSearchBar = () => {
     return (
       <div className={`col col-md-3 results-wrapper`}>
@@ -191,7 +212,7 @@ function Home(props) {
                   data-ajax-response="map"
                   data-ajax-data-file="assets/external/data_2.php"
                   data-ajax-auto-zoom="1"
-                  class="btn btn-primary pull-right"
+                  class="btn btn-primary pull-right search-btn"
                   onClick={() => handleClick()}
                 >
                   更新
@@ -313,15 +334,6 @@ function Home(props) {
               <div class="row">
                 <div class="col-md-6 col-sm-6">バッテリー：</div>
                 <div class="col-md-6 col-sm-6">
-                  {/* <button
-                    style={{ width: '100%' }}
-                    data-ajax-response="map"
-                    data-ajax-data-file="assets/external/data_2.php"
-                    data-ajax-auto-zoom="1"
-                    class="btn btn-primary"
-                  >
-                    充電中
-                  </button> */}
                   <span>{device?.lastLocation?.bat}</span>
                 </div>
               </div>
@@ -331,12 +343,14 @@ function Home(props) {
                 <div class="col-md-6 col-sm-6">
                   <button
                     style={{ width: '100%' }}
-                    data-ajax-response="map"
-                    data-ajax-data-file="assets/external/data_2.php"
-                    data-ajax-auto-zoom="1"
-                    class="btn btn-primary"
+                    onClick={(event) => showModal(event)}
+                    class={`btn ${
+                      device?.monitoringActive
+                        ? 'btn-outline-primary'
+                        : 'btn-primary'
+                    }`}
                   >
-                    解除中
+                    {device?.monitoringActive ? '監視中' : '解除中'}
                   </button>
                 </div>
               </div>
@@ -378,10 +392,22 @@ function Home(props) {
             </div>
 
             <APIProvider apiKey={API_KEY}>
-              <CutomMap device={device} movements={movements} />
+              <CutomMap
+                device={device}
+                movements={movements}
+                key={updatedKey}
+                range={range}
+              />
             </APIProvider>
             {renderSearchBar()}
           </div>
+          {showMonitoring && (
+            <MonitoringModal
+              device={device}
+              updateRange={updateRange}
+              range={range}
+            />
+          )}
         </div>
       )}
     </div>

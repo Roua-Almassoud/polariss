@@ -1,18 +1,11 @@
 import React from 'react';
-import {
-  Map,
-  useMap,
-  useMapsLibrary,
-  Marker,
-  AdvancedMarker,
-  Pin,
-} from '@vis.gl/react-google-maps';
+import { Map, useMap, useMapsLibrary, Marker } from '@vis.gl/react-google-maps';
 
 export default function CutomMap(props) {
-  const { device, movements } = props;
+  const { device, movements,range } = props;
   const map = useMap();
   const maps = useMapsLibrary('maps');
-  const position = { lat: 0, lng: -180 };
+
   let label = device?.device?.bike?.name;
   const markerLabel =
     label.length > 2
@@ -39,13 +32,25 @@ export default function CutomMap(props) {
     strokeWeight: 2,
   });
 
+  let geofence_Latlng = new google.maps.LatLng(
+    markerPosition?.lat,
+    markerPosition?.lng
+  );
   devicePath.setMap(map);
-
+  const circle = new maps.Circle({
+    radius: device?.monitoringSettings?.range,
+    center: geofence_Latlng,
+    strokeColor: '#4611a7',
+    fillColor: '#4611a7',
+    fillOpacity: 0.2,
+    strokeWeight: 3,
+  });
+  circle.setMap(map);
   return (
     <Map
       className={'col col-12 col-md-9 map-col'}
       defaultCenter={markerPosition}
-      defaultZoom={12}
+      defaultZoom={18}
       gestureHandling={'greedy'}
       disableDefaultUI={false}
     >
@@ -57,10 +62,12 @@ export default function CutomMap(props) {
           scale: 20,
           strokeColor: 'white',
           strokeWeight: 0,
+          anchor: google.maps.Point(16, 55), //マーカーの表示位置を25pxだけ上に
+          zIndex: 1000,
         }}
-        position={{ lat: markerPosition?.lat, lng: markerPosition?.lng }}
+        position={markerPosition}
         label={{ text: `${markerLabel}`, color: 'white' }}
-      ></Marker>
+      />
     </Map>
   );
 }
