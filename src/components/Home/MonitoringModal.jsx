@@ -3,7 +3,7 @@ import Button from 'react-bootstrap/Button';
 import Modal from 'react-bootstrap/Modal';
 import Api from '../../api/Api';
 
-function MonitoringModal({ device, updateRange,range }) {
+function MonitoringModal({ device, updateRange, range }) {
   const initialDevice = {
     turnOn: device.monitoringActive,
     imsi: device?.device.imsi,
@@ -52,9 +52,11 @@ function MonitoringModal({ device, updateRange,range }) {
       ''
     );
     if (response.data.code === 200) {
-      const updatedRange = body.turnOn ? body.range : 0;
-      close(updatedRange);
-      window.location.reload();
+      const returnedDevice = response.data?.data;
+      const updatedRange = returnedDevice.monitoringActive
+        ? returnedDevice.monitoringSettings.range
+        : 0;
+      close(returnedDevice);
     }
   };
 
@@ -63,9 +65,9 @@ function MonitoringModal({ device, updateRange,range }) {
     setMonitoringFields({ ...monitoringFields, [field]: value });
   };
 
-  const close = (range) => {
+  const close = (device) => {
     setShow(false);
-    updateRange(range);
+    updateRange(device);
   };
 
   return (

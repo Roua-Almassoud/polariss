@@ -168,10 +168,13 @@ function Home(props) {
     setShowMonitoring(true);
   };
 
-  const updateRange = (value) => {
-    setRange(value);
+  const updateRange = (updatedDevice) => {
+    if (updatedDevice) {
+      setDevice(updatedDevice);
+      setUpdatedKey(Utils.unique());
+      setShow(false);
+    }
     setShowMonitoring(false);
-    setUpdatedKey(Utils.unique());
   };
 
   const renderSearchBar = () => {
@@ -253,7 +256,13 @@ function Home(props) {
                 <div class="col-md-12 col-sm-12">
                   <div class="form-group">
                     <select
-                      class="form-control form-select selectpicker"
+                      class={`form-control ${
+                        !isEmpty(selectedUser)
+                          ? selectedUser?.bikes.length > 1
+                            ? 'form-select'
+                            : ''
+                          : 'form-select'
+                      } selectpicker`}
                       name="category"
                       onChange={(event) => handleSelect('bike', event)}
                     >
@@ -276,7 +285,13 @@ function Home(props) {
                 <div class="col-md-12 col-sm-12">
                   <div class="form-group">
                     <select
-                      class="form-select"
+                      class={`form-control ${
+                        !isEmpty(selectedBike)
+                          ? selectedBike?.devices.length > 1
+                            ? 'form-select'
+                            : ''
+                          : 'form-select'
+                      } selectpicker`}
                       name="device"
                       onChange={(event) => handleSelect('device', event)}
                     >
@@ -314,12 +329,12 @@ function Home(props) {
                   <p
                     style={{ width: '100%' }}
                     class={`btn ${
-                      !device?.monitoringActive
+                      device?.deviceStatus === '要確認'
                         ? 'btn-outline-danger'
                         : 'btn-outline-primary'
                     }`}
                   >
-                    正常
+                    {device?.deviceStatus}
                   </p>
                 </div>
               </div>

@@ -2,7 +2,7 @@ import React from 'react';
 import { Map, useMap, useMapsLibrary, Marker } from '@vis.gl/react-google-maps';
 
 export default function CutomMap(props) {
-  const { device, movements,range } = props;
+  const { device, movements, range } = props;
   const map = useMap();
   const maps = useMapsLibrary('maps');
 
