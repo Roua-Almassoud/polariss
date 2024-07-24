@@ -128,7 +128,7 @@ export default function CutomMap(props) {
                   </div>
                 </div>
                 <hr />
-                <div class="row mb-3">
+                <div class={`row ${!device?.monitoringActive ? 'mb-3' : ''}`}>
                   <div class="col-md-6 col-sm-6">監視モード：</div>
                   <div class="col-md-6 col-sm-6">
                     <button
@@ -144,6 +144,17 @@ export default function CutomMap(props) {
                     </button>
                   </div>
                 </div>
+                {device?.monitoringActive && (
+                  <>
+                    <hr />
+                    <div class="row mb-3">
+                      <div class="col-md-6 col-sm-6">監視半径：</div>
+                      <div class="col-md-6 col-sm-6">
+                        <span>{`${device?.monitoringSettings?.range}m`}</span>
+                      </div>
+                    </div>
+                  </>
+                )}
               </div>
             </div>
           </InfoWindow>
