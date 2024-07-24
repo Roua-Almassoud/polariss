@@ -1196,6 +1196,13 @@ body .secondary-nav a i {
 .show-side-bar {
   display: none;
 }
+.gm-style-iw.gm-style-iw-c {
+  width: 250px;
+  max-width: 300px !important;
+}
+.gm-style-iw.gm-style-iw-c .gm-style-iw-d {
+  overflow-x: hidden !important;
+}
 
 @keyframes slide {
   0% {
@@ -1229,7 +1236,7 @@ body .secondary-nav a i {
   }
 }
 
-.monitoring-modal .modal-footer .btn{
+.monitoring-modal .modal-footer .btn {
   padding: 8px 15px;
 }
 

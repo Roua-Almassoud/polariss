@@ -2,7 +2,6 @@ import React, { Suspense, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 function MainLayout(props) {
-  
   return (
     <div className="main-layout">
       <header id="page-header">
@@ -22,9 +21,7 @@ function MainLayout(props) {
               <div class="primary-nav has-mega-menu">
                 <ul class="navigation">
                   <li class="active has-child">
-                    <a>
-                      {localStorage.getItem('user-name') || 'Name'}
-                    </a>
+                    <a>{localStorage.getItem('user-name') || 'Name'}</a>
                     <div class="wrapper">
                       <div id="nav-homepages" class="nav-wrapper">
                         <ul>

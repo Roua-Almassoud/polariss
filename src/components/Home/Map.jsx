@@ -1,8 +1,18 @@
-import React from 'react';
-import { Map, useMap, useMapsLibrary, Marker } from '@vis.gl/react-google-maps';
+import React, { useState } from 'react';
+import {
+  Map,
+  useMap,
+  useMapsLibrary,
+  Marker,
+  InfoWindow,
+  AdvancedMarker,
+  useAdvancedMarkerRef,
+} from '@vis.gl/react-google-maps';
 
 export default function CutomMap(props) {
-  const { device, movements, range } = props;
+  const [markerRef, marker] = useAdvancedMarkerRef();
+  const { device, movements, range, showModal } = props;
+  const [markerInfo, setMarkerInfo] = useState(false);
   const map = useMap();
   const maps = useMapsLibrary('maps');
 
@@ -46,28 +56,99 @@ export default function CutomMap(props) {
     strokeWeight: 3,
   });
   circle.setMap(map);
+
+  const markerClicked = (e) => {
+    setMarkerInfo(true);
+  };
+  const handleClose = () => {
+    setMarkerInfo(false);
+  };
   return (
-    <Map
-      className={'col col-12 col-md-9 map-col'}
-      defaultCenter={markerPosition}
-      defaultZoom={18}
-      gestureHandling={'greedy'}
-      disableDefaultUI={false}
-    >
-      <Marker
-        icon={{
-          path: google.maps.SymbolPath.CIRCLE,
-          fillColor: '#4611a7',
-          fillOpacity: 1,
-          scale: 20,
-          strokeColor: 'white',
-          strokeWeight: 0,
-          anchor: google.maps.Point(16, 55), //マーカーの表示位置を25pxだけ上に
-          zIndex: 1000,
-        }}
-        position={markerPosition}
-        label={{ text: `${markerLabel}`, color: 'white' }}
-      />
-    </Map>
+    <>
+      <Map
+        className={'col col-12 col-md-9 map-col'}
+        defaultCenter={markerPosition}
+        defaultZoom={18}
+        gestureHandling={'greedy'}
+        disableDefaultUI={false}
+        mapId="4504f8b37365c3d0"
+      >
+        <AdvancedMarker
+          position={markerPosition}
+          ref={markerRef}
+          //label={{ text: `${markerLabel}`, color: 'white' }}
+          title={`${markerLabel}`}
+          onClick={(e) => markerClicked(e)}
+        >
+          <Marker
+            icon={{
+              path: google.maps.SymbolPath.CIRCLE,
+              fillColor: '#4611a7',
+              fillOpacity: 1,
+              scale: 20,
+              strokeColor: 'white',
+              strokeWeight: 0,
+              anchor: google.maps.Point(16, 55), //マーカーの表示位置を25pxだけ上に
+              zIndex: 1000,
+            }}
+            position={markerPosition}
+            label={{ text: `${markerLabel}`, color: 'white' }}
+            onClick={(e) => markerClicked(e)}
+          />
+        </AdvancedMarker>
+        {markerInfo && (
+          <InfoWindow anchor={marker} onClose={() => handleClose()}>
+            <div class="row">
+              <div class="form search-form inputs-underline">
+                <div class="section-title">
+                  <h5>{device?.device?.bike?.name}</h5>
+                </div>
+                <hr />
+
+                <div class="row">
+                  <div class="col-md-6 col-sm-6">端末状態：</div>
+                  <div class="col-md-6 col-sm-6">
+                    <p
+                      style={{ width: '100%' }}
+                      class={`btn mb-0 ${
+                        device?.deviceStatus === '要確認'
+                          ? 'btn-outline-danger'
+                          : 'btn-outline-primary'
+                      }`}
+                    >
+                      {device?.deviceStatus}
+                    </p>
+                  </div>
+                </div>
+                <hr />
+                <div class="row">
+                  <div class="col-md-6 col-sm-6">バッテリー：</div>
+                  <div class="col-md-6 col-sm-6">
+                    <span>{device?.lastLocation?.bat}</span>
+                  </div>
+                </div>
+                <hr />
+                <div class="row mb-3">
+                  <div class="col-md-6 col-sm-6">監視モード：</div>
+                  <div class="col-md-6 col-sm-6">
+                    <button
+                      style={{ width: '100%' }}
+                      onClick={(event) => showModal(event)}
+                      class={`btn ${
+                        device?.monitoringActive
+                          ? 'btn-outline-primary'
+                          : 'btn-primary'
+                      }`}
+                    >
+                      {device?.monitoringActive ? '監視中' : '解除中'}
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </InfoWindow>
+        )}
+      </Map>
+    </>
   );
 }

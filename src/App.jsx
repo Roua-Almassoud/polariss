@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   BrowserRouter as Router,
   useNavigate,
@@ -14,15 +14,21 @@ import Device from './components/device/Device';
 import List from './components/list/List';
 import Home from './components/Home/Home';
 import LineLogin from './components/login/LineLogin';
+import Utils from './components/utils/utils';
 
 function App() {
+  const [layoutKey, setLayoutKey] = useState(Utils.unique());
   useEffect(() => {}, []);
 
   return (
     <Router>
-      <MainLayout>
+      <MainLayout key={layoutKey}>
         <Routes>
-          <Route exact path="/" element={<Home />} />
+          <Route
+            exact
+            path="/"
+            element={<Home setLayoutKey={setLayoutKey} />}
+          />
           <Route exact path="/login" element={<LineLogin />} />
           <Route exact path="/setting/:id" element={<Settings />} />
           <Route exact path="/setting" element={<Settings />} />

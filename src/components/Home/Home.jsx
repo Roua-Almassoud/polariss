@@ -19,6 +19,7 @@ import Utils from '../utils/utils';
 const API_KEY = import.meta.env.API_KEY;
 function Home(props) {
   const navigate = useNavigate();
+  const { setLayoutKey } = props;
   const [searchParams] = useSearchParams();
   const [loading, setLoading] = useState(true);
   const [show, setShow] = useState(false);
@@ -48,9 +49,11 @@ function Home(props) {
     );
     if (response.data.code === 200) {
       const userId = response.data.data.accessToken;
+      const userName = response.data.data?.profile?.name1;
       localStorage.setItem('userId', userId);
+      localStorage.setItem('user-name', userName);
+      setLayoutKey(Utils.unique());
       navigate('/');
-      getHomePage();
     }
   };
 
@@ -412,6 +415,7 @@ function Home(props) {
                 movements={movements}
                 key={updatedKey}
                 range={range}
+                showModal={showModal}
               />
             </APIProvider>
             {renderSearchBar()}
