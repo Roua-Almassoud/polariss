@@ -34,6 +34,8 @@ function Home(props) {
   const [showMonitoring, setShowMonitoring] = useState(false);
   const [range, setRange] = useState(0);
   const [updatedKey, setUpdatedKey] = useState(Utils.unique());
+  const [pageKay, setPageKay] = useState(Utils.unique());
+  const [firstCall, setFirstCall] = useState(true);
 
   const lineApi = async () => {
     setLoading(true);
@@ -113,7 +115,16 @@ function Home(props) {
       setSelectedBike(bike);
       setSelecteDevice(device);
       getDeviceInfo(device);
+      setUpdatedKey(Utils.unique());
+      setFirstCall(false);
     }
+  };
+
+  const loadFunc = () => {
+    if (window.tTo) {
+      clearTimeout(window.tTo);
+    }
+    window.tTo = setTimeout(() => getHomePage(), firstCall ? 0 : 30000);
   };
 
   useEffect(() => {
@@ -123,10 +134,10 @@ function Home(props) {
       if (!localStorage.getItem('userId')) {
         navigate('/login');
       } else {
-        getHomePage();
+        loadFunc();
       }
     }
-  }, []);
+  }, [users]);
 
   const handleSelect = (field, event) => {
     const value = event.target.value;
@@ -385,7 +396,7 @@ function Home(props) {
   };
 
   return (
-    <div id="page-content">
+    <div id="page-content" key={pageKay}>
       {!loading && (
         <div class="hero-section full-screen has-map has-sidebar">
           <div class="row">
