@@ -4,6 +4,7 @@ import {
   useNavigate,
   Route,
   Routes,
+  useLocation,
 } from 'react-router-dom';
 import './App.css';
 import MainLayout from './components/MainLayout';
@@ -15,11 +16,18 @@ import List from './components/list/List';
 import Home from './components/Home/Home';
 import LineLogin from './components/login/LineLogin';
 import Utils from './components/utils/utils';
+import Setup from './components/setup/Setup';
 
 function App() {
   const [layoutKey, setLayoutKey] = useState(Utils.unique());
-  useEffect(() => {}, []);
-
+  // let navigate = useNavigate();
+  // useEffect(() => {
+  //   let location = useLocation();
+  //   console.log('loca: ', location);
+  //   if (localStorage.getItem('type') === 'ot-registered') {
+  //     navigate('/setup');
+  //   }
+  // }, [location]);
   return (
     <Router>
       <MainLayout key={layoutKey}>
@@ -43,6 +51,7 @@ function App() {
           <Route exact path="/setting/device/:id" element={<Device />} />
           <Route exact path="/setting/device" element={<Device />} />
           <Route exact path="/setting/list" element={<List />} />
+          <Route exact path="/setup" element={<Setup />} />
         </Routes>
       </MainLayout>
     </Router>

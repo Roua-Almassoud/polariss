@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 import Api from '../../api/Api';
 import { useNavigate, useParams } from 'react-router-dom';
 import ModalComponent from '../common/ModalComponent';
-function Device() {
+function Device(props) {
   const location = useLocation();
   const { id } = useParams();
   const navigate = useNavigate();
@@ -67,7 +67,6 @@ function Device() {
     );
     if (response.data.code === 200) {
       setError('');
-      window.location.reload(false);
     } else {
       let modal = document.getElementById('exampleModal');
       modal.classList.remove('show');
@@ -208,18 +207,26 @@ function Device() {
               </div>
             </div>
 
-            <div className="d-flex justify-content-between">
-              <button
-                type="button"
-                className="btn btn-outline-primary btn-sm px-3"
-                onClick={() =>
-                  navigate(
-                    `${type === 'info' ? '/setting/user-info' : '/setting'}`
-                  )
-                }
-              >
-                戻る
-              </button>
+            <div
+              className={`d-flex ${
+                props.component !== 'setup'
+                  ? 'justify-content-between'
+                  : 'justify-content-end'
+              }`}
+            >
+              {props.component !== 'setup' && (
+                <button
+                  type="button"
+                  className="btn btn-outline-primary btn-sm px-3"
+                  onClick={() =>
+                    navigate(
+                      `${type === 'info' ? '/setting/user-info' : '/setting'}`
+                    )
+                  }
+                >
+                  戻る
+                </button>
+              )}
               <div className="d-flex justify-content-between">
                 {id && (
                   <button

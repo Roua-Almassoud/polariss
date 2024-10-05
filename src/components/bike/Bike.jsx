@@ -4,7 +4,7 @@ import { useLocation } from 'react-router-dom';
 import Api from '../../api/Api';
 import { useNavigate, useParams } from 'react-router-dom';
 import ModalComponent from '../common/ModalComponent';
-function Bike() {
+function Bike(props) {
   const location = useLocation();
   const { id } = useParams();
   const navigate = useNavigate();
@@ -56,8 +56,20 @@ function Bike() {
         navigate('/setting/user-info');
         window.location.reload(false);
       } else {
-        navigate('/setting');
-        window.location.reload(false);
+        if (props.component === 'setup') {
+          props.changeForm();
+          let modal = document.getElementById('exampleModal');
+          modal.classList.remove('show');
+          let modalBack = document.getElementsByClassName('modal-backdrop');
+          if (modalBack) {
+            for (let i = 0; i < modalBack.length; i++) {
+              modalBack[i]?.classList.remove('show');
+            }
+          }
+        } else {
+          navigate('/setting');
+          window.location.reload(false);
+        }
       }
     }
   };
@@ -82,18 +94,26 @@ function Bike() {
               />
             </div>
           </div>
-          <div className="d-flex justify-content-between">
-            <button
-              type="button"
-              className="btn btn-outline-primary btn-sm px-3"
-              onClick={() =>
-                navigate(
-                  `${type === 'info' ? '/setting/user-info' : '/setting'}`
-                )
-              }
-            >
-              戻る
-            </button>
+          <div
+            className={`d-flex ${
+              props.component !== 'setup'
+                ? 'justify-content-between'
+                : 'justify-content-end'
+            }`}
+          >
+            {props.component !== 'setup' && (
+              <button
+                type="button"
+                className="btn btn-outline-primary btn-sm px-3"
+                onClick={() =>
+                  navigate(
+                    `${type === 'info' ? '/setting/user-info' : '/setting'}`
+                  )
+                }
+              >
+                戻る
+              </button>
+            )}
             <div className="d-flex justify-content-between">
               {id && (
                 <button

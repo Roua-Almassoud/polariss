@@ -1,5 +1,5 @@
 import { Dropdown } from 'bootstrap';
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState, useMemo } from 'react';
 import { useParams, useNavigate, useSearchParams } from 'react-router-dom';
 import './Home.css';
 import {
@@ -18,6 +18,16 @@ import Utils from '../utils/utils';
 
 const API_KEY = import.meta.env.API_KEY;
 function Home(props) {
+  // const initialValue = useMemo(() => {
+  //   console.log('props: ', props);
+  //   const localStorageValueStr = localStorage.getItem('filter');
+  //   // If there is a value stored in localStorage, use that
+  //   if (localStorageValueStr) {
+  //     return JSON.parse(localStorageValueStr);
+  //   }
+  //   // Otherwise use initial_value that was passed to the function
+  //   return initialValue;
+  // }, []);
   const navigate = useNavigate();
   const { setLayoutKey } = props;
   const [searchParams] = useSearchParams();
@@ -36,6 +46,7 @@ function Home(props) {
   const [updatedKey, setUpdatedKey] = useState(Utils.unique());
   const [pageKay, setPageKay] = useState(Utils.unique());
   const [firstCall, setFirstCall] = useState(true);
+  // const [filter, setFilter] = usePersistState(initialValue);
 
   const lineApi = async () => {
     setLoading(true);
@@ -53,7 +64,7 @@ function Home(props) {
       const userId = response.data.data.accessToken;
       const userName = response.data.data?.profile?.name1;
       localStorage.setItem('userId', userId);
-      localStorage.setItem('user-name', userName);
+      if (userName) localStorage.setItem('user-name', userName);
       setLayoutKey(Utils.unique());
       navigate('/');
     }
@@ -107,18 +118,30 @@ function Home(props) {
     );
     if (response.data.code === 200) {
       const users = response.data.data;
-      setUsers(users);
-      const user = users[0];
-      const bike = user.bikes[0];
-      const device = bike.devices[0];
-      setSelectedUser(user);
-      setSelectedBike(bike);
-      setSelecteDevice(device);
-      getDeviceInfo(device);
-      setUpdatedKey(Utils.unique());
+      if (users.length > 0) {
+        setUsers(users);
+        const user = users[0];
+        const bike = user.bikes[0];
+        const device = bike.devices[0];
+        setSelectedUser(user);
+        setSelectedBike(bike);
+        setSelecteDevice(device);
+        getDeviceInfo(device);
+        setUpdatedKey(Utils.unique());
+        localStorage.removeItem('type')
+        // setFilter(user);
+      } else {
+        navigate('/setup');
+        localStorage.setItem('type', 'not-registered')
+      }
       setFirstCall(false);
     }
   };
+
+  // useEffect(() => {
+  //   const filterStr = JSON.stringify(filter); // Stringified state
+  //   localStorage.setItem('filter', filterStr); // Set stringified state as item in localStorage
+  // }, [filter]);
 
   const loadFunc = () => {
     if (window.tTo) {
