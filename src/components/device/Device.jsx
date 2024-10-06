@@ -5,6 +5,7 @@ import Api from '../../api/Api';
 import { useNavigate, useParams } from 'react-router-dom';
 import ModalComponent from '../common/ModalComponent';
 function Device(props) {
+  const component = props.component;
   const location = useLocation();
   const { id } = useParams();
   const navigate = useNavigate();
@@ -67,6 +68,11 @@ function Device(props) {
     );
     if (response.data.code === 200) {
       setError('');
+      if (props.component === 'setup') {
+        props.changeForm();
+        navigate('/setting');
+        window.location.reload(false);
+      }
     } else {
       let modal = document.getElementById('exampleModal');
       modal.classList.remove('show');
@@ -238,14 +244,24 @@ function Device(props) {
                   </button>
                 )}
 
-                <button
-                  type="button"
-                  class="btn btn-primary"
-                  data-bs-toggle="modal"
-                  data-bs-target="#exampleModal"
-                >
-                  更新
-                </button>
+                {component !== 'setup' ? (
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    data-bs-toggle="modal"
+                    data-bs-target="#exampleModal"
+                  >
+                    更新
+                  </button>
+                ) : (
+                  <button
+                    type="button"
+                    class="btn btn-primary"
+                    onClick={() => updateDevice()}
+                  >
+                    更新
+                  </button>
+                )}
               </div>
             </div>
           </form>

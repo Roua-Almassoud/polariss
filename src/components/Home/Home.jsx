@@ -120,9 +120,19 @@ function Home(props) {
       const users = response.data.data;
       if (users.length > 0) {
         setUsers(users);
-        const user = users[0];
-        const bike = user.bikes[0];
-        const device = bike.devices[0];
+        let user;
+        if (isEmpty(selectedUser)) {
+          console.log('in if');
+          user = users[0];
+        } else {
+          console.log('in else');
+          user = selectedUser;
+        }
+
+        const bike = isEmpty(selectedBike) ? user.bikes[0] : selectedBike;
+        const device = isEmpty(selectedDevice)
+          ? bike.devices[0]
+          : selectedDevice;
         setSelectedUser(user);
         setSelectedBike(bike);
         setSelecteDevice(device);

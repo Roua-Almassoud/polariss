@@ -3,12 +3,12 @@ import { useState } from 'react';
 import { useLocation } from 'react-router-dom';
 import Api from '../../api/Api';
 import { useNavigate } from 'react-router-dom';
-function Profile(props) {
-  console.log('props in proile: ', props.component);
+const Profile = (props) => {
+  const component = props.component;
   const location = useLocation();
   const navigate = useNavigate();
   const type = location?.state;
-
+  const [error, setError] = useState('');
   const [user, setUser] = useState({});
 
   const getUserData = async () => {
@@ -43,21 +43,14 @@ function Profile(props) {
       'put',
       localStorage.getItem('userId')
     );
-    if (response.data) {
+    if (response.data.code === 200) {
+      setError('');
       if (type === 'info') {
         navigate('/setting/user-info');
         window.location.reload(false);
       } else {
-        if (props.component === 'setup') {
+        if (component === 'setup') {
           props.changeForm();
-          let modal = document.getElementById('exampleModal');
-          modal.classList.remove('show');
-          let modalBack = document.getElementsByClassName('modal-backdrop');
-          if (modalBack) {
-            for (let i = 0; i < modalBack.length; i++) {
-              modalBack[i]?.classList.remove('show');
-            }
-          }
         } else window.location.reload(false);
       }
     }
@@ -65,6 +58,11 @@ function Profile(props) {
 
   return (
     <div className="edit-card">
+      {error && (
+        <div class="alert alert-danger" role="alert">
+          {error}
+        </div>
+      )}
       <div className="card">
         <div className="card-header p-3">
           <h4>ユーザーデータ</h4>
@@ -124,15 +122,14 @@ function Profile(props) {
               />
             </div>
           </div>
-
           <div
             className={`d-flex ${
-              props.component !== 'setup'
+              component !== 'setup'
                 ? 'justify-content-between'
                 : 'justify-content-end'
             }`}
           >
-            {props.component !== 'setup' && (
+            {component !== 'setup' && (
               <button
                 type="button"
                 className="btn btn-outline-primary btn-sm px-3"
@@ -145,15 +142,24 @@ function Profile(props) {
                 戻る
               </button>
             )}
-
-            <button
-              type="button"
-              class="btn btn-primary"
-              data-bs-toggle="modal"
-              data-bs-target="#exampleModal"
-            >
-              更新
-            </button>
+            {component !== 'setup' ? (
+              <button
+                type="button"
+                class="btn btn-primary"
+                data-bs-toggle="modal"
+                data-bs-target="#exampleModal"
+              >
+                更新
+              </button>
+            ) : (
+              <button
+                type="button"
+                class="btn btn-primary"
+                onClick={() => updateUser()}
+              >
+                更新
+              </button>
+            )}
           </div>
         </form>
       </div>
@@ -202,6 +208,6 @@ function Profile(props) {
       </div>
     </div>
   );
-}
+};
 
 export default Profile;

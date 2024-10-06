@@ -1,4 +1,4 @@
-import React, { Suspense, useEffect, useState } from 'react';
+import React, { Suspense, useEffect, useState, useRef } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import '../settings/Setting.css';
 import Api from '../../api/Api';
@@ -7,6 +7,7 @@ import Bike from '../bike/Bike';
 import Device from '../device/Device';
 function Setup(props) {
   const navigate = useNavigate();
+  const fromRef = useRef();
   const { id } = useParams();
   const [list, setList] = useState([]);
   const [parent, setParent] = useState('');
@@ -25,19 +26,13 @@ function Setup(props) {
     let formToReturn;
     switch (currentForm) {
       case 'profile':
-        formToReturn = (
-          <Profile component={'setup'} changeForm={changeForm} />
-        );
+        formToReturn = <Profile component={'setup'} changeForm={changeForm} />;
         break;
       case 'bike':
-        formToReturn = (
-          <Bike component={'setup'} changeForm={changeForm} />
-        );
+        formToReturn = <Bike component={'setup'} changeForm={changeForm} />;
         break;
       case 'device':
-        formToReturn = (
-          <Device component={'setup'} changeForm={changeForm} />
-        );
+        formToReturn = <Device component={'setup'} changeForm={changeForm} />;
         break;
     }
     return formToReturn;
@@ -81,7 +76,7 @@ function Setup(props) {
             Back
           </button>
         )}
-        {currentForm !== 'device' && (
+        {/* {currentForm !== 'device' && (
           <button
             type="button"
             className="btn btn-primary"
@@ -89,7 +84,7 @@ function Setup(props) {
           >
             Next
           </button>
-        )}
+        )} */}
       </div>
     </div>
   );

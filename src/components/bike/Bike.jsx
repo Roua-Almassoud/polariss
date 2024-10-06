@@ -5,7 +5,9 @@ import Api from '../../api/Api';
 import { useNavigate, useParams } from 'react-router-dom';
 import ModalComponent from '../common/ModalComponent';
 function Bike(props) {
+  const component = props.component;
   const location = useLocation();
+  const [error, setError] = useState('');
   const { id } = useParams();
   const navigate = useNavigate();
   const type = location?.state;
@@ -21,7 +23,9 @@ function Bike(props) {
     const responseUser = await Api.call({}, `users/${userId}`, 'get', userId);
     if (responseUser.data) {
       let userData = responseUser.data.data;
-      let selectedBike = id ? userData.bikes.find((a) => a.id == id) : {};
+      let selectedBike = id
+        ? userData.bikes.find((a) => a.id == id)
+        : userData.bikes[0];
       setUser(userData);
       setBike(selectedBike);
     }
@@ -51,31 +55,41 @@ function Bike(props) {
       request_type,
       localStorage.getItem('userId')
     );
-    if (response.data) {
+    if (response.data.code === 200) {
+      setError('');
       if (type === 'info') {
         navigate('/setting/user-info');
         window.location.reload(false);
       } else {
         if (props.component === 'setup') {
           props.changeForm();
-          let modal = document.getElementById('exampleModal');
-          modal.classList.remove('show');
-          let modalBack = document.getElementsByClassName('modal-backdrop');
-          if (modalBack) {
-            for (let i = 0; i < modalBack.length; i++) {
-              modalBack[i]?.classList.remove('show');
-            }
-          }
         } else {
           navigate('/setting');
           window.location.reload(false);
         }
       }
+    } else {
+      let modal = document.getElementById('exampleModal');
+      modal.classList.remove('show');
+      let modalBack = document.getElementsByClassName('modal-backdrop');
+      if (modalBack) {
+        for (let i = 0; i < modalBack.length; i++) {
+          modalBack[i]?.classList.remove('show');
+        }
+      }
+      setError(
+        response.data ? response.data.message : 'Error, Please try again!'
+      );
     }
   };
 
   return (
     <div className="edit-card">
+      {error && (
+        <div class="alert alert-danger" role="alert">
+          {error}
+        </div>
+      )}
       <div className="card">
         <div className="card-header p-3">
           <h4>バイクデータ</h4>
@@ -124,15 +138,24 @@ function Bike(props) {
                   削除
                 </button>
               )}
-
-              <button
-                type="button"
-                class="btn btn-primary"
-                data-bs-toggle="modal"
-                data-bs-target="#exampleModal"
-              >
-                更新
-              </button>
+              {component !== 'setup' ? (
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  data-bs-toggle="modal"
+                  data-bs-target="#exampleModal"
+                >
+                  更新
+                </button>
+              ) : (
+                <button
+                  type="button"
+                  class="btn btn-primary"
+                  onClick={() => updateBike()}
+                >
+                  更新
+                </button>
+              )}
             </div>
           </div>
         </form>
