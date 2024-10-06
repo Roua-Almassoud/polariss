@@ -128,11 +128,11 @@ function Home(props) {
         setSelecteDevice(device);
         getDeviceInfo(device);
         setUpdatedKey(Utils.unique());
-        localStorage.removeItem('type')
+        localStorage.removeItem('type');
         // setFilter(user);
       } else {
         navigate('/setup');
-        localStorage.setItem('type', 'not-registered')
+        localStorage.setItem('type', 'not-registered');
       }
       setFirstCall(false);
     }
@@ -167,7 +167,7 @@ function Home(props) {
     let userToUpdate, bikeToUpdate, devicetoUpdate;
     switch (field) {
       case 'user':
-        userToUpdate = users.find((a) => a.id === value);
+        userToUpdate = users.find((a) => a.id.toString() === value);
         bikeToUpdate = userToUpdate.bikes[0];
         devicetoUpdate = bikeToUpdate.devices[0];
         setSelectedUser(userToUpdate);
@@ -175,13 +175,17 @@ function Home(props) {
         setSelecteDevice(devicetoUpdate);
         break;
       case 'bike':
-        bikeToUpdate = selectedUser.bikes.find((a) => a.id === value);
+        bikeToUpdate = selectedUser.bikes.find(
+          (a) => a.id.toString() === value
+        );
         devicetoUpdate = bikeToUpdate.devices[0];
-        setSelectedBike(bikeToSelect);
+        setSelectedBike(bikeToUpdate);
         setSelecteDevice(devicetoUpdate);
         break;
       case 'device':
-        devicetoUpdate = selectedBike.devices.find((a) => a.id === value);
+        devicetoUpdate = selectedBike.devices.find(
+          (a) => a.id.toString() === value
+        );
         setSelecteDevice(devicetoUpdate);
         break;
     }
