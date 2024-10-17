@@ -72,6 +72,9 @@ function Device(props) {
         props.changeForm();
         navigate('/setting');
         window.location.reload(false);
+      } else {
+        navigate('/setting');
+        window.location.reload(false);
       }
     } else {
       let modal = document.getElementById('exampleModal');
@@ -278,7 +281,7 @@ function Device(props) {
           <div class="modal-content">
             <div class="modal-header">
               <h1 class="modal-title fs-5" id="exampleModalLabel">
-                Modal Title
+                確認
               </h1>
               <button
                 type="button"

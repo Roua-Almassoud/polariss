@@ -171,7 +171,7 @@ function Bike(props) {
           <div class="modal-content">
             <div class="modal-header">
               <h1 class="modal-title fs-5" id="exampleModalLabel">
-                Modal Title
+              確認
               </h1>
               <button
                 type="button"
