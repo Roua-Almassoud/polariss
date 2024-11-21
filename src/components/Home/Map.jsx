@@ -88,7 +88,6 @@ export default function CutomMap(props) {
               scale: 20,
               strokeColor: 'white',
               strokeWeight: 0,
-              //anchor: google.maps.Point(16, 55), //マーカーの表示位置を25pxだけ上に
               zIndex: 1000,
             }}
             position={markerPosition}
