@@ -457,7 +457,7 @@ function Home(props) {
               {renderSearchBar()}
             </div>
 
-            {/* <APIProvider apiKey={API_KEY}>
+            <APIProvider apiKey={API_KEY}>
               <CutomMap
                 device={device}
                 movements={movements}
@@ -465,7 +465,7 @@ function Home(props) {
                 range={range}
                 showModal={showModal}
               />
-            </APIProvider> */}
+            </APIProvider>
             {renderSearchBar()}
           </div>
           {showMonitoring && (
