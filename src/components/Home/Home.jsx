@@ -15,6 +15,7 @@ import Api from '../../api/Api';
 import CutomMap from './Map';
 import MonitoringModal from './MonitoringModal';
 import Utils from '../utils/utils';
+import EngineModal from './EngineModal';
 
 const API_KEY = import.meta.env.API_KEY;
 function Home(props) {
@@ -42,10 +43,12 @@ function Home(props) {
   const [startDate, setStartDate] = useState(new Date());
   const [endDate, setEndDate] = useState(new Date());
   const [showMonitoring, setShowMonitoring] = useState(false);
+  const [showEngineModal, setShowEngineModal] = useState(false);
   const [range, setRange] = useState(0);
   const [updatedKey, setUpdatedKey] = useState(Utils.unique());
   const [pageKay, setPageKay] = useState(Utils.unique());
   const [firstCall, setFirstCall] = useState(true);
+  const [engine, setEngine] = useState({});
   // const [filter, setFilter] = usePersistState(initialValue);
 
   const lineApi = async () => {
@@ -122,10 +125,8 @@ function Home(props) {
         setUsers(users);
         let user;
         if (isEmpty(selectedUser)) {
-          console.log('in if');
           user = users[0];
         } else {
-          console.log('in else');
           user = selectedUser;
         }
 
@@ -148,16 +149,23 @@ function Home(props) {
     }
   };
 
-  // useEffect(() => {
-  //   const filterStr = JSON.stringify(filter); // Stringified state
-  //   localStorage.setItem('filter', filterStr); // Set stringified state as item in localStorage
-  // }, [filter]);
-
   const loadFunc = () => {
     if (window.tTo) {
       clearTimeout(window.tTo);
     }
     window.tTo = setTimeout(() => getHomePage(), firstCall ? 0 : 30000);
+  };
+
+  const getIbcDevices = async () => {
+    const ibcDevices = await Api.call(
+      {},
+      `ibcDevices`,
+      'get',
+      localStorage.getItem('userId')
+    );
+    if (ibcDevices.data.code === 200) {
+      setEngine(ibcDevices.data.data[0]);
+    }
   };
 
   useEffect(() => {
@@ -168,6 +176,7 @@ function Home(props) {
         navigate('/login');
       } else {
         loadFunc();
+        if (firstCall) getIbcDevices();
       }
     }
   }, [users]);
@@ -219,6 +228,11 @@ function Home(props) {
     setShowMonitoring(true);
   };
 
+  const showEngModal = (event) => {
+    event.preventDefault();
+    setShowEngineModal(true);
+  };
+
   const updateRange = (updatedDevice) => {
     if (updatedDevice) {
       setDevice(updatedDevice);
@@ -226,6 +240,15 @@ function Home(props) {
       setShow(false);
     }
     setShowMonitoring(false);
+  };
+
+  const updateEngine = (updatedEngine) => {
+    if (updatedEngine) {
+      setEngine(updatedEngine);
+      setUpdatedKey(Utils.unique());
+      setShow(false);
+    }
+    setShowEngineModal(false);
   };
 
   const renderSearchBar = () => {
@@ -370,6 +393,51 @@ function Home(props) {
           <div class="form search-form inputs-underline">
             <form>
               <div class="section-title">
+                <h3></h3>
+              </div>
+              <hr />
+              <div class="row">
+                <div class="col-md-6 col-sm-6">監視モード：</div>
+                <div class="col-md-6 col-sm-6">
+                  <button
+                    style={{ width: '100%' }}
+                    onClick={(event) => showModal(event)}
+                    class={`btn ${
+                      device?.monitoringActive
+                        ? 'btn-outline-primary'
+                        : 'btn-primary'
+                    }`}
+                  >
+                    {device?.monitoringActive ? '監視中' : '解除中'}
+                  </button>
+                </div>
+              </div>
+              <hr />
+              <div class="row">
+                <div class="col-md-6 col-sm-6">Engine Status: </div>
+                <div class="col-md-6 col-sm-6">
+                  <button
+                    style={{ width: '100%' }}
+                    onClick={(event) => showEngModal(event)}
+                    class={`btn ${
+                      engine?.engineStatus === 'OFF'
+                        ? 'btn-outline-primary'
+                        : 'btn-primary'
+                    }`}
+                  >
+                    {engine?.engineStatus}
+                  </button>
+                </div>
+              </div>
+            </form>
+          </div>
+          {/* </div> */}
+        </div>
+        <div class="row">
+          {/* <div class="results-wrapper"> */}
+          <div class="form search-form inputs-underline">
+            <form>
+              <div class="section-title">
                 <h3>最終通信情報</h3>
               </div>
               <hr />
@@ -404,7 +472,7 @@ function Home(props) {
                 </div>
               </div>
               <hr />
-              <div class="row">
+              {/* <div class="row">
                 <div class="col-md-6 col-sm-6">監視モード：</div>
                 <div class="col-md-6 col-sm-6">
                   <button
@@ -419,7 +487,7 @@ function Home(props) {
                     {device?.monitoringActive ? '監視中' : '解除中'}
                   </button>
                 </div>
-              </div>
+              </div> */}
             </form>
           </div>
           {/* </div> */}
@@ -474,6 +542,9 @@ function Home(props) {
               updateRange={updateRange}
               range={range}
             />
+          )}
+          {showEngineModal && (
+            <EngineModal engine={engine} updateEngine={updateEngine} />
           )}
         </div>
       )}
