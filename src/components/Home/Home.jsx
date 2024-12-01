@@ -85,7 +85,7 @@ function Home(props) {
     return [year, month, day].join('-');
   };
 
-  const getDeviceInfo = async (device = selectedDevice) => {
+  const getDeviceInfo = async (device = selectedDevice, field = '') => {
     const deviceInfo = await Api.call(
       {},
       `devices/latestInfo?imsi=${device.imsi}`,
@@ -108,7 +108,7 @@ function Home(props) {
           : 0
       );
       setMovements(movementResponse.data.data);
-      setLoading(false);
+      if (field && field !== 'user') setLoading(false);
     }
   };
 
@@ -157,11 +157,13 @@ function Home(props) {
   };
 
   const getIbcDevices = async (selectedUser = {}) => {
+    setLoading(true);
     const userId = Utils.isEmptyObject(selectedUser)
       ? localStorage.getItem('userId')
       : selectedUser?.id;
     const ibcDevices = await Api.call({}, `ibcDevices`, 'get', userId);
     if (ibcDevices.data.code === 200) {
+      setLoading(false);
       if (ibcDevices.data.data.length > 0) setEngine(ibcDevices.data.data[0]);
       else setEngine({});
     }
@@ -208,7 +210,7 @@ function Home(props) {
         break;
     }
     setLoading(true);
-    getDeviceInfo(devicetoUpdate);
+    getDeviceInfo(devicetoUpdate, field);
     setShow(false);
     if (field === 'user') getIbcDevices(userToUpdate);
   };
@@ -415,7 +417,7 @@ function Home(props) {
               <hr />
               {!Utils.isEmptyObject(engine) && (
                 <div class="row">
-                  <div class="col-md-6 col-sm-6">{'—> エンジン制御：'}</div>
+                  <div class="col-md-6 col-sm-6">{'エンジン制御：'}</div>
                   <div class="col-md-6 col-sm-6">
                     <button
                       style={{ width: '100%' }}
