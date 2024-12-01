@@ -156,15 +156,14 @@ function Home(props) {
     window.tTo = setTimeout(() => getHomePage(), firstCall ? 0 : 30000);
   };
 
-  const getIbcDevices = async () => {
-    const ibcDevices = await Api.call(
-      {},
-      `ibcDevices`,
-      'get',
-      localStorage.getItem('userId')
-    );
+  const getIbcDevices = async (selectedUser = {}) => {
+    const userId = Utils.isEmptyObject(selectedUser)
+      ? localStorage.getItem('userId')
+      : selectedUser?.id;
+    const ibcDevices = await Api.call({}, `ibcDevices`, 'get', userId);
     if (ibcDevices.data.code === 200) {
-      setEngine(ibcDevices.data.data[0]);
+      if (ibcDevices.data.data.length > 0) setEngine(ibcDevices.data.data[0]);
+      else setEngine({});
     }
   };
 
@@ -211,6 +210,7 @@ function Home(props) {
     setLoading(true);
     getDeviceInfo(devicetoUpdate);
     setShow(false);
+    if (field === 'user') getIbcDevices(userToUpdate);
   };
 
   const isEmpty = (value) => {
@@ -413,22 +413,24 @@ function Home(props) {
                 </div>
               </div>
               <hr />
-              <div class="row">
-                <div class="col-md-6 col-sm-6">Engine Status: </div>
-                <div class="col-md-6 col-sm-6">
-                  <button
-                    style={{ width: '100%' }}
-                    onClick={(event) => showEngModal(event)}
-                    class={`btn ${
-                      engine?.engineStatus === 'OFF'
-                        ? 'btn-outline-primary'
-                        : 'btn-primary'
-                    }`}
-                  >
-                    {engine?.engineStatus}
-                  </button>
+              {!Utils.isEmptyObject(engine) && (
+                <div class="row">
+                  <div class="col-md-6 col-sm-6">{'—> エンジン制御：'}</div>
+                  <div class="col-md-6 col-sm-6">
+                    <button
+                      style={{ width: '100%' }}
+                      onClick={(event) => showEngModal(event)}
+                      class={`btn ${
+                        engine?.engineStatus === 'OFF'
+                          ? 'btn-outline-primary'
+                          : 'btn-primary'
+                      }`}
+                    >
+                      {engine?.engineStatus}
+                    </button>
+                  </div>
                 </div>
-              </div>
+              )}
             </form>
           </div>
           {/* </div> */}

@@ -28,10 +28,14 @@ function EngineModal({ engine, updateEngine }) {
   return (
     <Modal show={show} onHide={close} className={'monitoring-modal'}>
       <Modal.Header closeButton>
-        <Modal.Title className={'fs-5'}>{`Header`}</Modal.Title>
+        <Modal.Title className={'fs-5'}>{`エンジン制御`}</Modal.Title>
       </Modal.Header>
       <Modal.Body>
-        <p className="fs-6">Description</p>
+        <p className="fs-6">
+          {engine?.engineStatus === 'OFF'
+            ? 'エンジン制御を開始しますか'
+            : 'エンジン制御を停止しますか'}
+        </p>
       </Modal.Body>
       <Modal.Footer>
         <Button variant="outline-primary" onClick={() => close()}>
