@@ -88,7 +88,7 @@ function Home(props) {
   const getDeviceInfo = async (device = selectedDevice, field = '') => {
     const deviceInfo = await Api.call(
       {},
-      `devices/latestInfo?imsi=${device.imsi}`,
+      `console?imsi=${device.imsi}`,
       'get',
       localStorage.getItem('userId')
     );

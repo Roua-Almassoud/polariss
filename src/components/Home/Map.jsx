@@ -18,14 +18,14 @@ export default function CutomMap(props) {
 
   let label = device?.device?.bike?.name;
   const markerLabel =
-    label.length > 2
+    label?.length > 2
       ? label
           .split(/\s/)
           .reduce((response, word) => (response += word.slice(0, 1)), '')
       : label;
   const markerPosition = {
-    lat: device.lastLocation.lat,
-    lng: device.lastLocation.lon,
+    lat: device?.lastLocation?.lat,
+    lng: device?.lastLocation?.lon,
   };
 
   if (!maps) {
