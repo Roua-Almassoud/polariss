@@ -88,7 +88,7 @@ function Home(props) {
   const getDeviceInfo = async (device = selectedDevice, field = '') => {
     const deviceInfo = await Api.call(
       {},
-      `console?imsi=${device.imsi}`,
+      `devices/latestInfo?imsi=${device.imsi}`,
       'get',
       localStorage.getItem('userId')
     );
@@ -528,16 +528,19 @@ function Home(props) {
             <div className={`show-side-bar ${show ? 'show' : 'hide'}`}>
               {renderSearchBar()}
             </div>
-
-            <APIProvider apiKey={API_KEY}>
-              <CutomMap
-                device={device}
-                movements={movements}
-                key={updatedKey}
-                range={range}
-                showModal={showModal}
-              />
-            </APIProvider>
+            <div className={'col col-12 col-md-9 map-col'}>
+              {!isEmpty(device) && (
+                <APIProvider apiKey={API_KEY}>
+                  <CutomMap
+                    device={device}
+                    movements={movements}
+                    key={updatedKey}
+                    range={range}
+                    showModal={showModal}
+                  />
+                </APIProvider>
+              )}
+            </div>
             {renderSearchBar()}
           </div>
           {showMonitoring && (

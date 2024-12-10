@@ -66,7 +66,7 @@ export default function CutomMap(props) {
   return (
     <>
       <Map
-        className={'col col-12 col-md-9 map-col'}
+        //className={'col col-12 col-md-9 map-col'}
         defaultCenter={markerPosition}
         defaultZoom={18}
         gestureHandling={'greedy'}
