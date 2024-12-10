@@ -153,7 +153,13 @@ function Home(props) {
     if (window.tTo) {
       clearTimeout(window.tTo);
     }
-    window.tTo = setTimeout(() => getHomePage(), firstCall ? 0 : 30000);
+    window.tTo = setTimeout(
+      () => {
+        //setDevice({});
+        getHomePage();
+      },
+      firstCall ? 0 : 30000
+    );
   };
 
   const getIbcDevices = async (selectedUser = {}) => {
@@ -222,6 +228,7 @@ function Home(props) {
   const handleClick = () => {
     setLoading(true);
     getDeviceInfo();
+    setLoading(false);
     setShow(false);
   };
 
@@ -529,7 +536,7 @@ function Home(props) {
               {renderSearchBar()}
             </div>
             <div className={'col col-12 col-md-9 map-col'}>
-              {!isEmpty(device) && (
+              {!isEmpty(device) && !loading && (
                 <APIProvider apiKey={API_KEY}>
                   <CutomMap
                     device={device}
