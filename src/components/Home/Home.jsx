@@ -49,7 +49,7 @@ function Home(props) {
   const [pageKay, setPageKay] = useState(Utils.unique());
   const [firstCall, setFirstCall] = useState(true);
   const [engine, setEngine] = useState({});
-  // const [filter, setFilter] = usePersistState(initialValue);
+  const [updateBarKey, setUpdateBarKey] = useState('');
 
   const lineApi = async () => {
     setLoading(true);
@@ -112,7 +112,7 @@ function Home(props) {
     }
   };
 
-  const getHomePage = async () => {
+  const getHomePage = async (userToUpdate = selectedUser) => {
     const response = await Api.call(
       {},
       `homePage`,
@@ -122,25 +122,27 @@ function Home(props) {
     if (response.data.code === 200) {
       const users = response.data.data;
       if (users.length > 0) {
-        setUsers(users);
         let user;
-        if (isEmpty(selectedUser)) {
+        if (isEmpty(userToUpdate)) {
           user = users[0];
         } else {
-          user = selectedUser;
+          user = userToUpdate;
         }
 
-        const bike = isEmpty(selectedBike) ? user.bikes[0] : selectedBike;
-        const device = isEmpty(selectedDevice)
-          ? bike.devices[0]
-          : selectedDevice;
+        //const bike = isEmpty(selectedBike) ? user.bikes[0] : selectedBike;
+        const bike = user.bikes[0];
+        // const device = isEmpty(selectedDevice)
+        //   ? bike.devices[0]
+        //   : selectedDevice;
+        const device = bike.devices[0];
         setSelectedUser(user);
         setSelectedBike(bike);
         setSelecteDevice(device);
         getDeviceInfo(device);
         setUpdatedKey(Utils.unique());
         localStorage.removeItem('type');
-        // setFilter(user);
+        setUsers(users);
+        setUpdateBarKey(Utils.unique());
       } else {
         navigate('/setup');
         localStorage.setItem('type', 'not-registered');
@@ -155,10 +157,9 @@ function Home(props) {
     }
     window.tTo = setTimeout(
       () => {
-        //setDevice({});
         getHomePage();
       },
-      firstCall ? 0 : 30000
+      firstCall ? 0 : 100000
     );
   };
 
@@ -186,7 +187,14 @@ function Home(props) {
         if (firstCall) getIbcDevices();
       }
     }
-  }, [users]);
+  }, [updateBarKey]);
+
+  const handleUpdateUser = (userToUpdate) => {
+    setSelectedUser((prevUser) => {
+      const newUser = userToUpdate;
+      return newUser;
+    });
+  };
 
   const handleSelect = (field, event) => {
     const value = event.target.value;
@@ -216,7 +224,9 @@ function Home(props) {
         break;
     }
     setLoading(true);
+    setDevice({});
     getDeviceInfo(devicetoUpdate, field);
+    getHomePage(userToUpdate);
     setShow(false);
     if (field === 'user') getIbcDevices(userToUpdate);
   };
@@ -226,6 +236,7 @@ function Home(props) {
   };
 
   const handleClick = () => {
+    setDevice({});
     setLoading(true);
     getDeviceInfo();
     setLoading(false);
@@ -265,7 +276,7 @@ function Home(props) {
       <div className={`col col-md-3 results-wrapper`}>
         <div class="row">
           <div class="form search-form inputs-underline">
-            <form>
+            <form onSubmit={(e) => e.preventDefault()}>
               <div class="section-title">
                 <h3>Select</h3>
               </div>
