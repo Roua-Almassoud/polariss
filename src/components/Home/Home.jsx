@@ -29,6 +29,60 @@ function Home(props) {
   //   // Otherwise use initial_value that was passed to the function
   //   return initialValue;
   // }, []);
+  const countries = [
+    {
+      country: 'Japan',
+      companies: [
+        {
+          name: 'Toyota',
+          vehicles: ['Corolla', 'Camry', 'RAV4', 'Highlander'],
+        },
+        {
+          name: 'Honda',
+          vehicles: ['Civic', 'Accord', 'CR-V', 'Pilot', 'Fit'],
+        },
+      ],
+    },
+    {
+      country: 'Australia',
+      companies: [
+        {
+          name: 'A Inc',
+          vehicles: ['Ute A1', 'Ute A2'],
+        },
+        {
+          name: 'B Motors',
+          vehicles: ['SUV B1', 'SUV B2', 'Sedan B3', 'Truck B4'],
+        },
+        {
+          name: 'C Vehicles',
+          vehicles: ['Compact C1', 'Compact C2', 'Crossover C3'],
+        },
+      ],
+    },
+    {
+      country: 'New Zealand',
+      companies: [
+        {
+          name: 'Kiwi Auto',
+          vehicles: ['Eco Kiwi1', 'Eco Kiwi2', 'SUV Kiwi3', 'Truck Kiwi4'],
+        },
+        {
+          name: 'NZ Motors',
+          vehicles: ['NZ Compact1', 'NZ Compact2', 'NZ SUV3'],
+        },
+        {
+          name: 'Island Drives',
+          vehicles: [
+            'Island Car1',
+            'Island Car2',
+            'Island Car3',
+            'Island Van4',
+          ],
+        },
+      ],
+    },
+  ];
   const navigate = useNavigate();
   const { setLayoutKey } = props;
   const [searchParams] = useSearchParams();
@@ -50,6 +104,11 @@ function Home(props) {
   const [firstCall, setFirstCall] = useState(true);
   const [engine, setEngine] = useState({});
   const [updateBarKey, setUpdateBarKey] = useState('');
+  const [selectedCountry, setSelectedCountry] = useState(countries[0]);
+  const [selectedCompany, setSelectedCompany] = useState(
+    countries[0].companies[0]
+  );
+  const [selectedVehicle, setSelectedVehicle] = useState('');
 
   const lineApi = async () => {
     setLoading(true);
@@ -198,7 +257,12 @@ function Home(props) {
 
   const handleSelect = (field, event) => {
     const value = event.target.value;
-    let userToUpdate, bikeToUpdate, devicetoUpdate;
+    let userToUpdate,
+      bikeToUpdate,
+      devicetoUpdate,
+      countryToUpdate,
+      companyToUpdate,
+      vehicleToUpdate;
     switch (field) {
       case 'user':
         userToUpdate = users.find((a) => a.id.toString() === value);
@@ -221,6 +285,29 @@ function Home(props) {
           (a) => a.id.toString() === value
         );
         setSelecteDevice(devicetoUpdate);
+        break;
+      case 'country':
+        countryToUpdate = countries.find((a) => a.country === value);
+        companyToUpdate = countryToUpdate.companies[0];
+        vehicleToUpdate = companyToUpdate.vehicles[0];
+        setSelectedCountry(countryToUpdate);
+        setSelectedCompany(companyToUpdate);
+        setSelectedVehicle(vehicleToUpdate);
+        return;
+        break;
+      case 'company':
+        companyToUpdate = selectedCountry.companies.find(
+          (a) => a.name === value
+        );
+        vehicleToUpdate = companyToUpdate.vehicles[0];
+        setSelectedCompany(companyToUpdate);
+        setSelectedVehicle(vehicleToUpdate);
+        return;
+        break;
+      case 'vehicle':
+        vehicleToUpdate = selectedCompany.vehicles.find((a) => a === value);
+        setSelectedVehicle(vehicleToUpdate);
+        return;
         break;
     }
     setLoading(true);
@@ -323,6 +410,89 @@ function Home(props) {
           {/* <div class="results-wrapper"> */}
           <div class="form search-form inputs-underline">
             <form>
+              <div class="row">
+                <div class="col-md-12 col-sm-12">
+                  <div class="form-group">
+                    <select
+                      class="form-control form-select selectpicker"
+                      name="country"
+                      onChange={(event) => handleSelect('country', event)}
+                    >
+                      {!isEmpty(selectedCountry) &&
+                        countries.map((country) => {
+                          return (
+                            <option
+                              value={country.country}
+                              selected={
+                                country.country === selectedCountry.country
+                              }
+                            >
+                              {country.country}
+                            </option>
+                          );
+                        })}
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 col-sm-12">
+                  <div class="form-group">
+                    <select
+                      class={`form-control ${
+                        !isEmpty(selectedCountry)
+                          ? selectedCountry?.companies.length > 1
+                            ? 'form-select'
+                            : ''
+                          : 'form-select'
+                      } selectpicker`}
+                      name="category"
+                      onChange={(event) => handleSelect('company', event)}
+                    >
+                      {!isEmpty(selectedCountry) &&
+                        selectedCountry?.companies.map((company) => {
+                          return (
+                            <option
+                              value={company.name}
+                              selected={company.name === selectedCompany.name}
+                            >
+                              {company.name}
+                            </option>
+                          );
+                        })}
+                    </select>
+                  </div>
+                </div>
+              </div>
+              <div class="row">
+                <div class="col-md-12 col-sm-12">
+                  <div class="form-group">
+                    <select
+                      class={`form-control ${
+                        !isEmpty(selectedCompany)
+                          ? selectedCompany?.vehicles.length > 1
+                            ? 'form-select'
+                            : ''
+                          : 'form-select'
+                      } selectpicker`}
+                      name="device"
+                      onChange={(event) => handleSelect('vehicle', event)}
+                    >
+                      {!isEmpty(selectedCompany) &&
+                        selectedCompany?.vehicles.map((vehicle) => {
+                          return (
+                            <option
+                              value={vehicle}
+                              selected={vehicle === selectedVehicle}
+                            >
+                              {vehicle}
+                            </option>
+                          );
+                        })}
+                    </select>
+                  </div>
+                </div>
+              </div>
               <div class="row">
                 <div class="col-md-12 col-sm-12">
                   <div class="form-group">
